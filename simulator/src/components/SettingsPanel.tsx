@@ -386,6 +386,8 @@ export const SettingsPanel: React.FC = () => {
                 <option value="infinity">Восьмерка (Infinity)</option>
                 <option value="oval">Овал (Oval)</option>
                 <option value="sharp">Острые изломы (Sharp 90°)</option>
+                <option value="slalom">Слалом (S-образные дуги)</option>
+                <option value="hairpin">Шпилька 180° и шикана</option>
               </select>
             </div>
             <div>

@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { useStore, CODE_TEMPLATES } from '../store/useStore';
 import { arduinoEnv } from '../engine/ArduinoTranspiler';
-import { Code2, Terminal, BookOpen, CheckCircle2, AlertCircle, FileCode } from 'lucide-react';
+import { Code2, Terminal, BookOpen, CheckCircle2, AlertCircle, FileCode, Download, Check } from 'lucide-react';
 
 export const CodeEditorPanel: React.FC = () => {
   const { code, setCode, hardware } = useStore();
   const [useMonaco, setUseMonaco] = useState(true);
   const [showDocs, setShowDocs] = useState(false);
+  const [exported, setExported] = useState(false);
 
   const compileError = arduinoEnv.getCompileError();
   const runtimeError = arduinoEnv.getRuntimeError();
@@ -17,6 +18,40 @@ export const CodeEditorPanel: React.FC = () => {
     if (tpl) {
       setCode(tpl.code);
     }
+  };
+
+  const handleExportIno = () => {
+    const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    const header = `/* ============================================================
+ *  Робот по линии (Line Follower) — Arduino (.ino)
+ *  Сгенерировано в Line Robot Simulator [Ufa-Dynamics]
+ *  Дата экспорта: ${timestamp}
+ * ============================================================
+ *  АППАРАТНАЯ КОМПОНОВКА ШАССИ:
+ *   - Колесная база (wheelbase): ${hardware.wheelbase} мм
+ *   - Радиус колес: ${hardware.wheelRadius} мм (диаметр ${hardware.wheelRadius * 2} мм)
+ *   - Ширина шины: ${hardware.wheelWidth} мм
+ *   - Коэффициент сцепления шин: ${hardware.tireGrip}
+ *   - Общий вес робота: ${hardware.weight} г
+ *   - Обороты моторов: ${hardware.motorRPM} RPM
+ *   - Напряжение питания: ${hardware.batteryVoltage} В (номинал ${hardware.nominalVoltage} В)
+ *   - Линейка датчиков: ${hardware.sensorCount} шт, шаг ${hardware.sensorSpacing} мм, вынос ${hardware.sensorDistance} мм
+ * ============================================================
+ */\n\n`;
+
+    const fullContent = header + code;
+    const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'line_follower_robot.ino';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setExported(true);
+    setTimeout(() => setExported(false), 2500);
   };
 
   return (
@@ -34,6 +69,19 @@ export const CodeEditorPanel: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1.5">
+          <button
+            onClick={handleExportIno}
+            className={`text-[11px] px-2.5 py-1 rounded transition flex items-center gap-1 font-semibold cursor-pointer ${
+              exported 
+                ? 'bg-emerald-600 text-white' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
+            }`}
+            title="Экспортировать скетч Arduino .ino с конфигурацией шасси"
+          >
+            {exported ? <Check className="w-3.5 h-3.5" /> : <Download className="w-3.5 h-3.5" />}
+            {exported ? 'Скачано!' : '.ino'}
+          </button>
+
           <button
             onClick={() => setShowDocs(!showDocs)}
             className={`text-[11px] px-2 py-1 rounded transition flex items-center gap-1 cursor-pointer ${

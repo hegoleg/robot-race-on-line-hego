@@ -15,21 +15,32 @@ export interface RobotHardwareConfig {
   driverEfficiency: number; // % КПД драйвера моторов (0.7 - 0.98)
   
   // Sensors Array
-  sensorCount: number;    // кол-во ИК датчиков (3, 5, 8, 12)
+  sensorCount: number;    // кол-во ИК датчиков (3, 5, 8, 12, 16)
   sensorSpacing: number;  // мм: расстояние между соседними датчиками
   sensorDistance: number; // мм: вынос планки датчиков вперед от оси колес
   sensorHeight: number;   // мм: высота подвеса датчиков над трассой (оптимум 3-5 мм)
 }
 
+export type TrackType = 'infinity' | 'oval' | 'sharp' | 'slalom' | 'hairpin';
+
 export type TrackSettings = {
   lineWidth: number;      // мм (на трассе обычно 19 мм или 25 мм)
   width: number;          // px холста
   height: number;         // px холста
-  type: 'infinity' | 'oval' | 'sharp';
+  type: TrackType;
 };
+
+export interface TelemetryPoint {
+  time: number;
+  error: number;
+  speed: number;
+  leftPWM: number;
+  rightPWM: number;
+}
 
 export type SimulationState = {
   isRunning: boolean;
+  timeScale: number;       // 0.5x, 1x, 2x, 5x
   robotX: number;
   robotY: number;
   robotAngle: number;
@@ -39,15 +50,23 @@ export type SimulationState = {
   rightMotorSpeed: number; // -1 to 1
   time: number;
   
+  // Live optical sensor readings (0..1000)
+  sensorReadings: number[];
+  
   // Lap timing & Analytics
   lapCount: number;
   currentLapTime: number;
   bestLapTime: number | null;
   lastLapTime: number | null;
+  newRecordAlert: boolean;
   offTrackCount: number;
   onLinePercentage: number;
   totalDistanceMeters: number;
   trail: Array<{ x: number; y: number }>;
+  
+  // Telemetry Oscilloscope Buffer
+  telemetryHistory: TelemetryPoint[];
+  showOscilloscope: boolean;
 };
 
 export interface HardwarePreset {
@@ -115,7 +134,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
     }
   },
   {
-    name: '🧱 Lego / Колесный Тандем (300 RPM)',
+    name: '🧱 Lego / Колесный Тандем (350 RPM)',
     description: 'Тяжелое шасси с большими колесами 56мм и высоким крутящим моментом',
     config: {
       wheelbase: 110,
@@ -135,12 +154,16 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
   }
 ];
 
-export const getTrackStartPosition = (type: 'infinity' | 'oval' | 'sharp', width = 800, height = 600) => {
+export const getTrackStartPosition = (type: TrackType, width = 800, height = 600) => {
   switch (type) {
     case 'oval':
       return { x: width / 2, y: height / 2 - height * 0.3, angle: 0 };
     case 'sharp':
       return { x: width * 0.35, y: height * 0.2, angle: 0 };
+    case 'slalom':
+      return { x: width * 0.2, y: height * 0.25, angle: 0 };
+    case 'hairpin':
+      return { x: width * 0.25, y: height * 0.3, angle: 0 };
     case 'infinity':
     default:
       return { x: width / 2, y: height / 2 - height * 0.35, angle: 0 };
@@ -288,6 +311,8 @@ interface AppState {
   updateSimState: (newState: Partial<SimulationState>) => void;
   resetSim: (startX?: number, startY?: number, angle?: number) => void;
   toggleSim: () => void;
+  setTimeScale: (scale: number) => void;
+  toggleOscilloscope: () => void;
 
   // Real-world calculated kinematics
   getTheoreticalTopSpeed: () => { mps: number; kmh: number };
@@ -333,6 +358,7 @@ export const useStore = create<AppState>((set, get) => ({
             time: 0,
             currentLapTime: 0,
             trail: [],
+            telemetryHistory: [],
           },
         };
       }
@@ -345,6 +371,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   simState: {
     isRunning: false,
+    timeScale: 1.0,
     robotX: initialPos.x,
     robotY: initialPos.y,
     robotAngle: initialPos.angle,
@@ -353,18 +380,28 @@ export const useStore = create<AppState>((set, get) => ({
     leftMotorSpeed: 0,
     rightMotorSpeed: 0,
     time: 0,
+    sensorReadings: new Array(initialPreset.config.sensorCount).fill(0),
     lapCount: 0,
     currentLapTime: 0,
     bestLapTime: null,
     lastLapTime: null,
+    newRecordAlert: false,
     offTrackCount: 0,
     onLinePercentage: 100,
     totalDistanceMeters: 0,
     trail: [],
+    telemetryHistory: [],
+    showOscilloscope: false,
   },
 
   updateSimState: (newState) =>
     set((state) => ({ simState: { ...state.simState, ...newState } })),
+
+  setTimeScale: (scale) =>
+    set((state) => ({ simState: { ...state.simState, timeScale: scale } })),
+
+  toggleOscilloscope: () =>
+    set((state) => ({ simState: { ...state.simState, showOscilloscope: !state.simState.showOscilloscope } })),
 
   resetSim: (startX, startY, angle) => {
     const { trackSettings } = get();
@@ -382,7 +419,9 @@ export const useStore = create<AppState>((set, get) => ({
         rightMotorSpeed: 0,
         time: 0,
         currentLapTime: 0,
+        newRecordAlert: false,
         trail: [],
+        telemetryHistory: [],
       }
     }));
   },
@@ -393,12 +432,9 @@ export const useStore = create<AppState>((set, get) => ({
 
   getTheoreticalTopSpeed: () => {
     const { hardware } = get();
-    // Effective RPM scaled by actual battery voltage vs nominal
     const voltageRatio = Math.max(0.5, Math.min(2.0, hardware.batteryVoltage / hardware.nominalVoltage));
     const effectiveRPM = hardware.motorRPM * voltageRatio * hardware.driverEfficiency;
-    // Radius in meters
     const radiusMeters = hardware.wheelRadius / 1000;
-    // v = 2 * pi * r * (RPM / 60)
     const mps = (2 * Math.PI * radiusMeters * effectiveRPM) / 60;
     const kmh = mps * 3.6;
     return { mps, kmh };

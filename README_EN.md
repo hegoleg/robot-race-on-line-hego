@@ -192,6 +192,28 @@ STL files are located in the repository root:
 
 ---
 
+## 💻 Engineering Robot Simulator ([simulator/](simulator/))
+
+To optimize your robot's layout before 3D printing and cutting hardware, an interactive engineering physics and Arduino C++ simulator is included:
+- 🏎️ **Chassis Geometry Modeling**: Wheelbase (mm), wheel diameter and width, tire friction coefficient, total mass, motor RPM, battery voltage (3.7V – 14.8V), and motor driver efficiency.
+- 📐 **Sensor Array Geometry**: From 3 to 16 sensors, customizable spacing (mm), ground clearance, and forward boom overhang.
+- 💻 **Real Arduino C++ Engine**: Runs authentic PID control code with `readLineBlack`, persistent integral/derivative state, and millisecond loop timing.
+- 📊 **Real-time Telemetry Oscilloscope**: Live plotting of trajectory tracking error, vehicle speed (km/h), and differential motor PWM signals.
+- 🔴 **Live QTR Sensor Monitor**: Individual reflectance bars with dynamic line centroid marker.
+- 🏁 **Competition Tracks**: Infinity track, Oval, 90° Sharp corners, Slalom S-curves, and 180° Hairpin with automatic lap timing and record alerts.
+- ⏱️ **Time Scale Control**: Variable simulation speed (0.5x, 1.0x, 2.0x, 5.0x).
+- 📥 **One-Click .ino Export**: Generates an Arduino IDE sketch documented with your tuned hardware specifications in the header.
+
+```bash
+cd simulator
+npm install
+npm run dev          # Web version in browser
+npm run electron:dev # Desktop Electron application
+npm run build        # Build standalone Windows installer (.exe)
+```
+
+---
+
 ## 📁 Repository Structure
 
 ```plaintext
@@ -200,6 +222,10 @@ robot-race-on-line-Ufa-Dynamics/
 │   └── banner.svg             # Repository banner and vector assets
 ├── .github/
 │   └── ISSUE_TEMPLATE/        # Bug reports & feature requests templates
+├── simulator/                 # Layout & C++ algorithm simulator
+│   ├── src/                   # Physics engine, C++ transpiler, UI components
+│   ├── package.json           # React, Vite, Electron, Monaco Editor configs
+│   └── vite.config.ts
 ├── LineFollowerv3.ino         # Main robot firmware
 ├── robotlinia.stl             # 3D chassis model
 ├── Sensor8rc mount.stl        # 3D sensor array mount model
