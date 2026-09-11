@@ -46,8 +46,8 @@ Engineered for competitive racing, the robot leverages the processing power of t
   - Debounced single-button control on GPIO 0: click to launch, click again to immediately cut motor power.
 - 🖨️ **3D-Printable Lightweight Chassis**:
   - Ready-to-print STL files for the chassis, adjustable sensor array mount, and LEGO modular adapters.
-- 💻 **Engineering Layout Simulator ([simulator/](simulator/))**:
-  - Interactive React + Electron application to test hardware setups (wheelbase, wheel diameter/width, motor RPM, battery voltage) and test real Arduino / C++ code prior to hardware assembly.
+- 💻 **Engineering Layout Simulator ([robot-race-sim](https://github.com/hegoleg/robot-race-sim))**:
+  - Interactive React + Electron application to test hardware setups (wheelbase, wheel diameter/width, motor RPM, battery voltage) and test real Arduino / C++ code prior to hardware assembly (moved to standalone repository [hegoleg/robot-race-sim](https://github.com/hegoleg/robot-race-sim)).
 
 ---
 
@@ -192,23 +192,25 @@ STL files are located in the repository root:
 
 ---
 
-## 💻 Engineering Robot Simulator ([simulator/](simulator/))
+## 💻 Engineering Robot Simulator ([robot-race-sim](https://github.com/hegoleg/robot-race-sim))
 
-To optimize your robot's layout before 3D printing and cutting hardware, an interactive engineering physics and Arduino C++ simulator is included:
+The robotics physics and Arduino C++ algorithm simulator is now maintained in its own dedicated repository:  
+👉 **[https://github.com/hegoleg/robot-race-sim](https://github.com/hegoleg/robot-race-sim)**
+
 - 🏎️ **Chassis Geometry Modeling**: Wheelbase (mm), wheel diameter and width, tire friction coefficient, total mass, motor RPM, battery voltage (3.7V – 14.8V), and motor driver efficiency.
 - 📐 **Sensor Array Geometry**: From 3 to 16 sensors, customizable spacing (mm), ground clearance, and forward boom overhang.
 - 💻 **Real Arduino C++ Engine**: Runs authentic PID control code with `readLineBlack`, persistent integral/derivative state, and millisecond loop timing.
+- 🎮 **Tactile Robot Start & Controls**: Physical interactive BOOT button (GPIO 0), header and code editor start buttons, Spacebar hotkey, and audio synthesizer.
 - 📊 **Real-time Telemetry Oscilloscope**: Live plotting of trajectory tracking error, vehicle speed (km/h), and differential motor PWM signals.
 - 🔴 **Live QTR Sensor Monitor**: Individual reflectance bars with dynamic line centroid marker.
 - 🏁 **Competition Tracks**: Infinity track, Oval, 90° Sharp corners, Slalom S-curves, and 180° Hairpin with automatic lap timing and record alerts.
-- ⏱️ **Time Scale Control**: Variable simulation speed (0.5x, 1.0x, 2.0x, 5.0x).
 - 📥 **One-Click .ino Export**: Generates an Arduino IDE sketch documented with your tuned hardware specifications in the header.
 
 ```bash
-cd simulator
+git clone https://github.com/hegoleg/robot-race-sim.git
+cd robot-race-sim
 npm install
 npm run dev          # Web version in browser
-npm run electron:dev # Desktop Electron application
 npm run build        # Build standalone Windows installer (.exe)
 ```
 
@@ -222,10 +224,6 @@ robot-race-on-line/
 │   └── banner.svg             # Repository banner and vector assets
 ├── .github/
 │   └── ISSUE_TEMPLATE/        # Bug reports & feature requests templates
-├── simulator/                 # Layout & C++ algorithm simulator
-│   ├── src/                   # Physics engine, C++ transpiler, UI components
-│   ├── package.json           # React, Vite, Electron, Monaco Editor configs
-│   └── vite.config.ts
 ├── LineFollowerv3.ino         # Main robot firmware
 ├── robotlinia.stl             # 3D chassis model
 ├── Sensor8rc mount.stl        # 3D sensor array mount model
