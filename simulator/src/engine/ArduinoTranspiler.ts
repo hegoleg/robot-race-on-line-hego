@@ -52,18 +52,19 @@ export class ArduinoEnvironment {
     // Examples: float Kp = 0.07; -> let Kp = 0.07;
     // int left = 0; -> let left = 0;
     // uint16_t sensorValues[8]; -> let sensorValues = new Array(8).fill(0);
-    js = js.replace(/\b(?:unsigned\s+)?(?:int|long|short|char|float|double|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t|size_t|bool|byte|word)\s+([A-Za-z0-9_]+)\s*\[\s*([0-9A-Za-z_]+)\s*\]\s*;/g, 'let $1 = new Array($2).fill(0);');
+    js = js.replace(/\b(?:unsigned\s+)?(?:int|long|short|char|float|double|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t|size_t|bool|boolean|byte|word)\s+([A-Za-z0-9_]+)\s*\[\s*([0-9A-Za-z_]+)\s*\]\s*;/g, 'let $1 = new Array($2).fill(0);');
     
     // Normal declarations: type varName = expr; -> let varName = expr;
-    js = js.replace(/\b(?:const\s+)?(?:unsigned\s+)?(?:int|long|short|char|float|double|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t|size_t|bool|byte|word|String)\s+([A-Za-z0-9_]+)\s*([=,;])/g, 'let $1 $2');
+    js = js.replace(/\b(?:const\s+)?(?:unsigned\s+)?(?:int|long|short|char|float|double|uint8_t|uint16_t|uint32_t|int8_t|int16_t|int32_t|size_t|bool|boolean|byte|word|String)\s+([A-Za-z0-9_]+)\s*([=,;])/g, 'let $1 $2');
 
     // 5. Function declarations: void loop() -> function loop()
     js = js.replace(/\b(?:void|int|float|double|bool|uint16_t)\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*\{/g, 'function $1($2) {');
 
-    // 6. Casts: (float)x -> Number(x), (int)x -> Math.floor(x)
-    js = js.replace(/\(\s*float\s*\)/g, 'Number');
-    js = js.replace(/\(\s*double\s*\)/g, 'Number');
-    js = js.replace(/\(\s*(?:int|uint16_t|uint8_t|long)\s*\)/g, 'Math.floor');
+    // 6. Casts: (float)x -> x (unneeded in JS), (int)x -> Math.floor(x)
+    js = js.replace(/\(\s*(?:float|double)\s*\)/g, '');
+    js = js.replace(/\(\s*(?:int|uint16_t|uint8_t|int8_t|int16_t|int32_t|uint32_t|long)\s*\)\s*\(/g, 'Math.floor(');
+    js = js.replace(/\(\s*(?:int|uint16_t|uint8_t|int8_t|int16_t|int32_t|uint32_t|long)\s*\)\s*([A-Za-z0-9_]+)/g, 'Math.floor($1)');
+    js = js.replace(/\(\s*(?:int|uint16_t|uint8_t|int8_t|int16_t|int32_t|uint32_t|long)\s*\)/g, '');
 
     // 7. Suffixes on numbers: 3500.0f -> 3500.0
     js = js.replace(/([0-9]+\.?[0-9]*)f\b/g, '$1');

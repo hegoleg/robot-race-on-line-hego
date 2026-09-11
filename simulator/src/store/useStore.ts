@@ -175,7 +175,7 @@ void loop() {
   uint16_t position = readLineBlack(sensorValues);
   
   float centerPos = (SENSOR_COUNT - 1) * 500.0;
-  float error = (float)position - centerPos;
+  float error = position - centerPos;
   
   // Интеграл с ограничением (Anti-windup)
   integral += error;
@@ -211,7 +211,7 @@ int baseSpeed = 180;
 void loop() {
   uint16_t position = readLineBlack(sensorValues);
   float center = (SENSOR_COUNT - 1) * 500.0;
-  float error = (float)position - center;
+  float error = position - center;
   
   float correction = Kp * error;
   
@@ -253,7 +253,7 @@ void loop() {
     return;
   }
   
-  float error = (float)position - center;
+  float error = position - center;
   integral = constrain(integral + error, -8000, 8000);
   float derivative = error - lastError;
   
