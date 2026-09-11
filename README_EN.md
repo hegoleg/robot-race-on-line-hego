@@ -46,6 +46,8 @@ Engineered for competitive racing, the robot leverages the processing power of t
   - Debounced single-button control on GPIO 0: click to launch, click again to immediately cut motor power.
 - 🖨️ **3D-Printable Lightweight Chassis**:
   - Ready-to-print STL files for the chassis, adjustable sensor array mount, and LEGO modular adapters.
+- 💻 **Engineering Layout Simulator ([simulator/](simulator/))**:
+  - Interactive React + Electron application to test hardware setups (wheelbase, wheel diameter/width, motor RPM, battery voltage) and test real Arduino / C++ code prior to hardware assembly.
 
 ---
 
