@@ -77,7 +77,7 @@ export interface HardwarePreset {
 
 export const HARDWARE_PRESETS: HardwarePreset[] = [
   {
-    name: '⚡ Ufa-Dynamics Pro (1500 RPM)',
+    name: '⚡ Pro Racing 1500 (ESP32-S3)',
     description: 'Боевая компоновка: ESP32-S3, TB6612FNG, N20 1500RPM, 2S LiPo (7.4V), QTR-8RC, колеса 32мм',
     config: {
       wheelbase: 75,
@@ -222,7 +222,7 @@ void loop() {
 
 export const CODE_TEMPLATES = [
   {
-    name: '🏎️ Спортивный PID (ESP32-S3 / Ufa-Dynamics)',
+    name: '🏎️ Спортивный PID (ESP32-S3 High-Speed)',
     code: DEFAULT_ARDUINO_CODE
   },
   {

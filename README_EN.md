@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="assets/banner.svg" alt="Robot Race On Line - Ufa-Dynamics" width="100%"/>
+<img src="assets/banner.svg" alt="High-Speed Line Follower Robot" width="100%"/>
 
-# 🏎️ High-Speed Line Follower Robot — Ufa-Dynamics
+# 🏎️ High-Speed Line Follower Robot
 
 **Autonomous competitive racing robot engineered for Line Follower tournaments**
 
@@ -21,7 +21,7 @@
 
 ## 📌 Overview
 
-This repository contains the complete firmware codebase and 3D printable mechanical design files for an autonomous high-speed **Line Follower** robot developed by a team member of **Ufa-Dynamics**.
+This repository contains the complete firmware codebase and 3D printable mechanical design files for an autonomous high-speed **Line Follower** robot.
 
 Engineered for competitive racing, the robot leverages the processing power of the **ESP32-S3** microcontroller, 20 kHz ultrasonic PWM frequency, an 8-channel **QTR-8RC** infrared reflectance sensor array, a tuned digital PID controller with Anti-Windup guard, and an adaptive low-contrast line detection algorithm.
 
@@ -217,7 +217,7 @@ npm run build        # Build standalone Windows installer (.exe)
 ## 📁 Repository Structure
 
 ```plaintext
-robot-race-on-line-Ufa-Dynamics/
+robot-race-on-line/
 ├── assets/
 │   └── banner.svg             # Repository banner and vector assets
 ├── .github/
@@ -238,10 +238,9 @@ robot-race-on-line-Ufa-Dynamics/
 
 ---
 
-## 👥 Authors & Team
-
+## 👥 Authors
+ 
 - **Developer**: [Egor (hegoleg)](https://github.com/hegoleg)
-- **Team**: **Ufa-Dynamics** (Ufa, Russia)
 - Feel free to open an [Issue](https://github.com/hegoleg/robot-race-on-line-Ufa-Dynamics/issues) for feedback and inquiries.
 
 ---

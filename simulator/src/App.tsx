@@ -17,7 +17,7 @@ function App() {
               <h1 className="text-base font-bold tracking-tight text-white flex items-center gap-2">
                 Line Robot Simulator
                 <span className="text-[10px] bg-blue-500/20 text-blue-300 font-medium px-2 py-0.5 rounded-full border border-blue-400/30">
-                  Ufa-Dynamics Edition
+                  Pro Edition
                 </span>
               </h1>
             </div>

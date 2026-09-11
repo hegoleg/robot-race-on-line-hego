@@ -24,7 +24,7 @@ export const CodeEditorPanel: React.FC = () => {
     const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
     const header = `/* ============================================================
  *  Робот по линии (Line Follower) — Arduino (.ino)
- *  Сгенерировано в Line Robot Simulator [Ufa-Dynamics]
+ *  Сгенерировано в Line Robot Simulator (Pro Edition)
  *  Дата экспорта: ${timestamp}
  * ============================================================
  *  АППАРАТНАЯ КОМПОНОВКА ШАССИ:

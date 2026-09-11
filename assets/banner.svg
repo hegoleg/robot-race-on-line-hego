@@ -105,11 +105,11 @@
 
   <!-- Left Content: Branding and Titles -->
   <g transform="translate(70, 75)">
-    <!-- Subtitle / Team Badge -->
+    <!-- Subtitle / Badge -->
     <g>
-      <rect x="0" y="0" width="170" height="26" rx="13" fill="#00f2fe" fill-opacity="0.1" stroke="#00f2fe" stroke-opacity="0.3" />
+      <rect x="0" y="0" width="180" height="26" rx="13" fill="#00f2fe" fill-opacity="0.1" stroke="#00f2fe" stroke-opacity="0.3" />
       <circle cx="12" cy="13" r="4" fill="#00f2fe" filter="url(#glowCyan)" />
-      <text x="26" y="17" class="title-team">UFA-DYNAMICS</text>
+      <text x="26" y="17" class="title-team">LINE FOLLOWER PRO</text>
     </g>
 
     <!-- Main Title -->
